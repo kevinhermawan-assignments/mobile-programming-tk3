@@ -19,7 +19,7 @@ export async function insertSchool(
   name: string,
   address: string,
   isEligible: boolean,
-): Promise<School> {
+) {
   const db = createConnection();
   const { insertId } = await db.executeAsync(
     'INSERT INTO schools (name, address, isEligible) VALUES (?, ?, ?);',
@@ -31,7 +31,22 @@ export async function insertSchool(
   return school;
 }
 
-export async function getSchools(): Promise<School[]> {
+export async function updateSchool(school: School) {
+  const db = createConnection();
+  await db.executeAsync(
+    'UPDATE schools SET name = ?, address = ?, isEligible = ? WHERE id = ?;',
+    [
+      school.getName(),
+      school.getAddress(),
+      school.getIsEligible(),
+      school.getId(),
+    ],
+  );
+
+  return school;
+}
+
+export async function getSchools() {
   const schools: School[] = [];
 
   const db = createConnection();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   Button,
@@ -9,17 +9,40 @@ import {
 } from 'react-native-paper';
 
 import { useAppContext } from '../components/AppContext';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-export default function AddSchoolScreen() {
-  const { onAddSchool } = useAppContext();
+export default function AddSchoolScreen({
+  route,
+  navigation,
+}: NativeStackScreenProps<any, 'AddSchool'>) {
+  const school = route.params?.school;
+  const { onAddSchool, onUpdateSchool } = useAppContext();
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [isEligible, setIsEligible] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
+  useEffect(() => {
+    if (school) {
+      setName(school.name);
+      setAddress(school.address);
+      setIsEligible(school.isEligible);
+
+      navigation.setOptions({ title: 'Edit Sekolah' });
+    }
+  }, [navigation, school]);
+
   async function save() {
-    await onAddSchool(name, address, isEligible);
+    if (school) {
+      school.name = name;
+      school.address = address;
+      school.isEligible = isEligible;
+
+      await onUpdateSchool(school);
+    } else {
+      await onAddSchool(name, address, isEligible);
+    }
 
     setName('');
     setAddress('');
@@ -65,7 +88,9 @@ export default function AddSchoolScreen() {
           Simpan
         </Button>
         <Snackbar visible={isSaved} onDismiss={() => setIsSaved(false)}>
-          Data sekolah berhasil disimpan.
+          {school
+            ? 'Sekolah berhasil diperbarui.'
+            : 'Sekolah berhasil ditambahkan.'}
         </Snackbar>
       </View>
     </View>

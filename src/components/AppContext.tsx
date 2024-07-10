@@ -6,6 +6,7 @@ import {
   deleteSchool,
   getSchools,
   insertSchool,
+  updateSchool,
 } from '../utils/db';
 
 type AppContextType = {
@@ -15,12 +16,14 @@ type AppContextType = {
     address: string,
     isEligible: boolean,
   ) => Promise<void>;
+  onUpdateSchool: (school: School) => Promise<void>;
   onDeleteSchool: (school: School) => Promise<void>;
 };
 
 const AppContext = createContext<AppContextType>({
   schools: [],
   onAddSchool: async () => {},
+  onUpdateSchool: async () => {},
   onDeleteSchool: async () => {},
 });
 
@@ -49,6 +52,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setSchools(updatedSchools);
   }
 
+  async function onUpdateSchool(data: School) {
+    const school = await updateSchool(data);
+    const updatedSchools = schools.map(s => {
+      if (s.getId() === school.getId()) {
+        return school;
+      }
+
+      return s;
+    });
+
+    setSchools(updatedSchools);
+  }
+
   async function onDeleteSchool(data: School) {
     const school = await deleteSchool(data);
     const updatedSchools = schools.filter(s => s.getId() !== school.getId());
@@ -61,6 +77,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       value={{
         schools,
         onAddSchool,
+        onUpdateSchool,
         onDeleteSchool,
       }}>
       {children}

@@ -64,9 +64,16 @@ export default function SchoolDetailScreen({
         <View>
           <Button
             mode="outlined"
+            textColor={DefaultTheme.colors.primary}
+            onPress={() => navigation.navigate('AddSchool', { school })}
+            style={styles.updateButton}>
+            Edit Sekolah
+          </Button>
+          <Button
+            mode="outlined"
             textColor={DefaultTheme.colors.error}
             onPress={() => setDeleteConfirmationVisible(true)}
-            style={styles.button}>
+            style={styles.deleteButton}>
             Hapus Sekolah
           </Button>
         </View>
@@ -106,7 +113,13 @@ const styles = StyleSheet.create({
   eligible: {
     fontWeight: 'bold',
   },
-  button: {
+  updateButton: {
+    padding: 4,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderColor: DefaultTheme.colors.primary,
+  },
+  deleteButton: {
     padding: 4,
     borderRadius: 8,
     borderColor: DefaultTheme.colors.error,
